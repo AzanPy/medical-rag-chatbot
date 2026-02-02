@@ -5,21 +5,17 @@ from tqdm import tqdm
 from src.helper import load_pdf_files, filter_to_minimal_docs, text_split, download_hugging_face_embeddings
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
-from langchain.schema import Document
+from langchain_core.documents import Document  # <-- CHANGED
 import uuid
 
 load_dotenv()
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 if not PINECONE_API_KEY:
     raise ValueError("PINECONE_API_KEY not found!")
-if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY not found!")
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 # Step 1: Load PDF
 print("Loading PDF...")
