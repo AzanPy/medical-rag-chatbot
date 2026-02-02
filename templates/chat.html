@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fas fa-robot"></i>
+                <div>
+                    <h2>MediBot</h2>
+                    <span class="status-dot"></span> <span class="status-text">Online</span>
+                </div>
+            </div>
+            <button id="refresh-chat"><i class="fas fa-sync-alt"></i></button>
+        </div>
+
+        <div class="chat-body" id="chat-box">
+            <div class="message bot-message">
+                <div class="message-content">Hello! I am your medical assistant. How can I help you today?</div>
+            </div>
+        </div>
+
+        <div class="chat-footer">
+            <form id="chat-form">
+                <input type="text" id="user-input" name="msg" placeholder="Type your message..." autocomplete="off"
+                    required>
+                <button type="submit" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#chat-form").on("submit", function (event) {
+                const date = new Date();
+                const hour = date.getHours();
+                const minute = date.getMinutes();
+                const str_time = hour + ":" + (minute < 10 ? '0' + minute : minute);
+
+                var rawText = $("#user-input").val();
+                var userHtml = '<div class="message user-message"><div class="message-content">' + rawText + '</div><div class="timestamp">' + str_time + '</div></div>';
+
+                $("#user-input").val("");
+                $("#chat-box").append(userHtml);
+                $("#chat-box").scrollTop($("#chat-box")[0].scrollHeight);
+
+                $.ajax({
+                    data: { msg: rawText },
+                    type: "POST",
+                    url: "/get",
+                }).done(function (data) {
+                    var botHtml = '<div class="message bot-message"><div class="message-content">' + data.res + '</div><div class="timestamp">' + str_time + '</div></div>';
+                    $("#chat-box").append(botHtml);
+                    $("#chat-box").scrollTop($("#chat-box")[0].scrollHeight);
+                });
+                event.preventDefault();
+            });
+        });
+    </script>
+</body>
+
+</html>
